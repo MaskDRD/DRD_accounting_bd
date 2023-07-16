@@ -13,7 +13,6 @@ CREATE TABLE users(
 );
 
 DROP PROCEDURE IF EXISTS bd.UserGetWhereTokenValue;
-
 CREATE DEFINER = `root` @`localhost` PROCEDURE bd.UserGetWhereTokenValue(in _token varchar(256)) 
 begin
 	select
@@ -32,7 +31,6 @@ begin
 end
 
 DROP PROCEDURE IF EXISTS bd.UserGetWhereId;
-
 CREATE DEFINER = `root` @`localhost` PROCEDURE bd.UserGetWhereId(in _id int) 
 begin
 	select
@@ -40,21 +38,36 @@ begin
 		u.login,
 		u.email,
 		u.nik,
-		u.check_active,
+		u.check_active,	
 		u.check_conf_email
 	from users u
 	where u.id = _id;
 end
 
-DROP PROCEDURE IF EXISTS bd.UserCreate;
+DROP PROCEDURE IF EXISTS bd.UserCheck;
+CREATE DEFINER = `root` @`localhost` PROCEDURE bd.UserCheck(
+	in _login varchar(128),
+	in _email varchar(128),
+	in _nik varchar(128)
+)
+begin
+	DECLARE check_login_ boolean;
+	DECLARE check_email_ boolean;
+	DECLARE check_nik_ boolean;
+	select count(u.login) into check_login_ from users u where u.login = _login limit 1;
+	select count(u.email) into check_email_ from users u where u.email = _email limit 1;
+	select count(u.nik) into check_nik_ from users u where u.nik = _nik limit 1;
+	select check_login_, check_email_, check_nik_;
+end
 
+DROP PROCEDURE IF EXISTS bd.UserCreate;
 CREATE DEFINER = `root` @`localhost` PROCEDURE bd.UserCreate(
 	in _login varchar(128),
 	in _password varchar(256),
 	in _email varchar(128),
 	in _nik varchar(128)
-) begin
-INSERT users(login, password, email, nik)
-VALUES (_login, _password, _email, _nik);
-
+) 
+begin
+	INSERT users(login, password, email, nik)
+	VALUES (_login, _password, _email, _nik);
 end
