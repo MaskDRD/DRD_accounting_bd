@@ -12,21 +12,49 @@ CREATE TABLE users(
 	CONSTRAINT customers_nik_uq UNIQUE KEY(nik)
 );
 
+DROP PROCEDURE IF EXISTS bd.UserGetWhereTokenValue;
 
-DROP PROCEDURE IF EXISTS bd.UserGet;
-CREATE DEFINER=`root`@`localhost` PROCEDURE bd.UserGet(in _token varchar(256))
+CREATE DEFINER = `root` @`localhost` PROCEDURE bd.UserGetWhereTokenValue(in _token varchar(256)) 
 begin
-	select * from users u left join token t ON t.id_user = u.id where t.value = _token;
+	select
+		u.id,
+		u.login,
+		u.email,
+		u.nik,
+		u.check_active,
+		u.check_conf_email,
+		t.id as token_id, 
+		t.value as token_value,
+		t.date as token_date
+	from users u
+	left join token t ON t.id_user = u.id
+	where t.value = _token;
+end
+
+DROP PROCEDURE IF EXISTS bd.UserGetWhereId;
+
+CREATE DEFINER = `root` @`localhost` PROCEDURE bd.UserGetWhereId(in _id int) 
+begin
+	select
+		u.id,
+		u.login,
+		u.email,
+		u.nik,
+		u.check_active,
+		u.check_conf_email
+	from users u
+	where u.id = _id;
 end
 
 DROP PROCEDURE IF EXISTS bd.UserCreate;
-CREATE DEFINER=`root`@`localhost` PROCEDURE bd.UserCreate(
-	in _login varchar(128), 
+
+CREATE DEFINER = `root` @`localhost` PROCEDURE bd.UserCreate(
+	in _login varchar(128),
 	in _password varchar(256),
 	in _email varchar(128),
 	in _nik varchar(128)
-	)
-begin
-	INSERT users(login, password, email, nik) 
-	VALUES (_login, _password, _email, _nik);
+) begin
+INSERT users(login, password, email, nik)
+VALUES (_login, _password, _email, _nik);
+
 end
