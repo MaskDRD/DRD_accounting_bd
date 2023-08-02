@@ -17,4 +17,6 @@ CREATE DEFINER = `root` @`localhost` PROCEDURE bd.TokenCreate(
 begin
 	INSERT token(value, id_user, date)
 	VALUES (_value, _id_user, NOW() + INTERVAL 1 DAY);
+	select LAST_INSERT_ID() as id;
 end
+

@@ -12,6 +12,7 @@ CREATE TABLE users(
 	CONSTRAINT customers_nik_uq UNIQUE KEY(nik)
 );
 
+-- bd.UserGetWhereTokenValue
 DROP PROCEDURE IF EXISTS bd.UserGetWhereTokenValue;
 CREATE DEFINER = `root` @`localhost` PROCEDURE bd.UserGetWhereTokenValue(in _token varchar(256)) 
 begin
@@ -30,6 +31,26 @@ begin
 	where t.value = _token;
 end
 
+-- bd.UserGetWhereTokenId
+DROP PROCEDURE IF EXISTS bd.UserGetWhereTokenId;
+CREATE DEFINER = `root` @`localhost` PROCEDURE bd.UserGetWhereTokenId(in _token_id int) 
+begin
+	select
+		u.id,
+		u.login,
+		u.email,
+		u.nik,
+		u.check_active,
+		u.check_conf_email,
+		t.id as token_id, 
+		t.value as token_value,
+		t.date as token_date
+	from users u
+	left join token t ON t.id_user = u.id
+	where t.id = _token_id;
+end
+
+-- bd.UserGetWhereId
 DROP PROCEDURE IF EXISTS bd.UserGetWhereId;
 CREATE DEFINER = `root` @`localhost` PROCEDURE bd.UserGetWhereId(in _id int) 
 begin
@@ -44,6 +65,7 @@ begin
 	where u.id = _id;
 end
 
+-- bd.UserCheck
 DROP PROCEDURE IF EXISTS bd.UserCheck;
 CREATE DEFINER = `root` @`localhost` PROCEDURE bd.UserCheck(
 	in _login varchar(128),
@@ -59,7 +81,7 @@ begin
 	select count(u.nik) into check_nik_ from users u where u.nik = _nik limit 1;
 	select check_login_, check_email_, check_nik_;
 end
-
+-- bd.UserCreate
 DROP PROCEDURE IF EXISTS bd.UserCreate;
 CREATE DEFINER = `root` @`localhost` PROCEDURE bd.UserCreate(
 	in _login varchar(128),
@@ -70,4 +92,5 @@ CREATE DEFINER = `root` @`localhost` PROCEDURE bd.UserCreate(
 begin
 	INSERT users(login, password, email, nik)
 	VALUES (_login, _password, _email, _nik);
+	select LAST_INSERT_ID() as id;
 end
