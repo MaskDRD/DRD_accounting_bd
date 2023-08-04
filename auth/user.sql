@@ -28,7 +28,8 @@ begin
 		t.date as token_date
 	from users u
 	left join token t ON t.id_user = u.id
-	where t.value = _token;
+	where t.value = _token
+	limit 1;
 end
 
 -- bd.UserGetWhereTokenId
@@ -47,7 +48,8 @@ begin
 		t.date as token_date
 	from users u
 	left join token t ON t.id_user = u.id
-	where t.id = _token_id;
+	where t.id = _token_id
+	limit 1;
 end
 
 -- bd.UserGetWhereId
@@ -62,7 +64,8 @@ begin
 		u.check_active,	
 		u.check_conf_email
 	from users u
-	where u.id = _id;
+	where u.id = _id
+	limit 1;
 end
 
 -- bd.UserCheck
